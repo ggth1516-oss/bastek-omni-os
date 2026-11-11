@@ -1,0 +1,26 @@
+{
+  "name": "@bastek/omni-os",
+  "version": "1.2.0",
+  "description": "Unified Tactical Browser Cockpit & Omni-Extension (Manifest V3)",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/build.mjs --watch",
+    "build": "node scripts/build.mjs",
+    "lint": "tsc --noEmit",
+    "daemon": "node scripts/vault-bridge-daemon.mjs"
+  },
+  "keywords": [
+    "chrome-extension",
+    "manifest-v3",
+    "tactical-cockpit",
+    "aether",
+    "gemini-hud"
+  ],
+  "author": "Rudy <rudy@bastek.local>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.0.280",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

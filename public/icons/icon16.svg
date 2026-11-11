@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="ambient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e11d48" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#09090b" stop-opacity="1" />
+    </radialGradient>
+    <linearGradient id="crimson" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff1744" />
+      <stop offset="100%" stop-color="#be123c" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Obsidian Rounded Body -->
+  <rect width="128" height="128" rx="28" fill="#09090b" />
+  <rect width="126" height="126" x="1" y="1" rx="27" fill="url(#ambient)" fill-opacity="0.25" stroke="#27272a" stroke-width="2" />
+
+  <!-- Laser Crimson Cinema Play Symbol with Fitts Edge Marker -->
+  <polygon points="48,36 94,64 48,92" fill="url(#crimson)" filter="url(#glow)" />
+  <circle cx="94" cy="64" r="5" fill="#ffffff" />
+  
+  <!-- Subtle Infinite Edge Accent -->
+  <path d="M12 28 L12 100" stroke="#ff1744" stroke-width="4" stroke-linecap="round" opacity="0.8" />
+  <path d="M116 28 L116 100" stroke="#10b981" stroke-width="4" stroke-linecap="round" opacity="0.8" />
+</svg>

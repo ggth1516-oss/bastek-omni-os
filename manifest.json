@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Bastek Omni-OS // Tactical Cockpit",
+  "version": "1.2.0",
+  "description": "Unified Tactical Browser Cockpit: AI Workspace, Cinema OS, Identity Switcher & Local Mesh.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "notifications",
+    "downloads",
+    "cookies",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "https://*.google.com/*",
+    "https://gemini.google.com/*",
+    "https://aistudio.google.com/*",
+    "https://*.youtube.com/*",
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Bastek Omni-OS (Cmd+Shift+K)",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "commands": {
+    "toggle-omni-bar": {
+      "suggested_key": {
+        "default": "Alt+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Przełącz Omni-Bar HUD"
+    }
+  }
+}

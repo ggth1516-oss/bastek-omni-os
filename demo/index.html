@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bastek Omni-OS // Live Style Studio & Playground</title>
+  <style>
+    :root {
+      --studio-bg: #0f1011;
+      --studio-surface: #1a1b1d;
+      --studio-border: #333538;
+      --studio-text: #e3e3e3;
+      --studio-accent: #a8c7fa;
+
+      /* Omni-OS Component Custom Properties (Live Tweaked) */
+      --omni-bg-base: #1e1f20;
+      --omni-bg-surface: #282a2c;
+      --omni-accent-primary: #a8c7fa;
+      --omni-accent-glow: rgba(168, 199, 250, 0.4);
+      --omni-text-primary: #e3e3e3;
+      --omni-text-muted: #8e918f;
+      --omni-border-subtle: #444746;
+      --omni-border-active: #a8c7fa;
+      --omni-orb-size: 60px;
+      --omni-radius-orb: 50%;
+      --omni-radius-panel: 16px;
+      --omni-blur-panel: 16px;
+      --omni-shadow-depth: 0 16px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Google Sans', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--studio-bg);
+      color: var(--studio-text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Left Control Sidebar */
+    .studio-sidebar {
+      width: 380px;
+      background: var(--studio-surface);
+      border-right: 1px solid var(--studio-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .studio-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--studio-border);
+      background: #141517;
+    }
+    .studio-header h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--omni-accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .studio-header p {
+      font-size: 11.5px;
+      color: var(--omni-text-muted);
+      margin-top: 4px;
+    }
+
+    .studio-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--studio-border);
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--omni-accent-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Preset Chips */
+    .presets-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .preset-btn {
+      background: #242528;
+      border: 1px solid var(--studio-border);
+      color: #c4c7c5;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+    .preset-btn:hover { background: #2f3034; border-color: var(--omni-accent-primary); color: #fff; }
+    .preset-btn.is-active { background: #1e2638; border-color: var(--omni-accent-primary); color: var(--omni-accent-primary); }
+
+    /* Control Inputs */
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .ctrl-label {
+      font-size: 12px;
+      color: var(--omni-text-muted);
+    }
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .color-picker-wrap input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: transparent;
+    }
+    .color-picker-wrap input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-picker-wrap input[type="color"]::-webkit-color-swatch { border: 1px solid var(--studio-border); border-radius: 6px; }
+    .color-val { font-size: 11px; font-family: monospace; color: #a8c7fa; width: 62px; }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .slider-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--omni-text-muted);
+    }
+    .slider-val { color: var(--omni-accent-primary); font-weight: 600; font-family: monospace; }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: #333538;
+      border-radius: 2px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--omni-accent-primary);
+      cursor: pointer;
+    }
+
+    /* Action Buttons */
+    .actions-footer {
+      padding: 16px 20px;
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #141517;
+      border-top: 1px solid var(--studio-border);
+    }
+    .btn-action {
+      background: #282a2c;
+      border: 1px solid var(--studio-border);
+      color: #e3e3e3;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .btn-action:hover { background: #35383c; border-color: var(--omni-accent-primary); }
+    .btn-primary { background: var(--omni-accent-primary); color: #041e49; font-weight: 600; border: none; }
+    .btn-primary:hover { background: #c2e7ff; }
+
+    /* Right Preview Stage */
+    .studio-stage {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(circle at 50% 50%, #16181b 0%, #0d0e10 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .mock-webpage {
+      position: absolute;
+      inset: 20px;
+      border-radius: 12px;
+      border: 1px solid #232528;
+      background: #131314;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mock-nav {
+      height: 48px;
+      background: #1e1f20;
+      border-bottom: 1px solid #303134;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .mock-dots { display: flex; gap: 6px; }
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; background: #444746; }
+    .mock-address {
+      flex: 1;
+      height: 28px;
+      background: #282a2c;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 12px;
+      color: #8e918f;
+    }
+
+    .mock-body {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .mock-card {
+      background: #1e1f20;
+      border: 1px solid #303134;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 680px;
+    }
+    .mock-title { font-size: 18px; font-weight: 600; color: #e3e3e3; margin-bottom: 8px; }
+    .mock-desc { font-size: 13px; color: #8e918f; line-height: 1.6; }
+
+    /* ========================================================
+       LIVE OMNI-OS SIMULATION CONTAINER (STYLED VIA VARIABLES)
+       ======================================================== */
+    .omni-sandbox {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .omni-dock {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main Nexus Orb FAB */
+    .omni-orb-wrapper {
+      position: relative;
+      width: var(--omni-orb-size);
+      height: var(--omni-orb-size);
+    }
+
+    .omni-orb-spinner {
+      position: absolute;
+      inset: -4px;
+      border-radius: var(--omni-radius-orb);
+      background: conic-gradient(from 0deg, transparent 0%, #4285f4 30%, #9b72cb 65%, #d96570 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      animation: omni-spin 2s linear infinite;
+    }
+    .omni-orb-spinner.is-active { opacity: 1; }
+
+    @keyframes omni-spin { to { transform: rotate(360deg); } }
+
+    .omni-orb-btn {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--omni-radius-orb);
+      background: var(--omni-bg-base);
+      border: 1px solid var(--omni-border-subtle);
+      color: var(--omni-accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      z-index: 2;
+    }
+    .omni-orb-btn:hover {
+      box-shadow: 0 0 24px var(--omni-accent-glow), 0 6px 20px rgba(0,0,0,0.8);
+      border-color: var(--omni-border-active);
+      transform: scale(1.05);
+    }
+    .omni-orb-btn.is-open {
+      border-color: var(--omni-border-active);
+      background: var(--omni-bg-surface);
+      box-shadow: 0 0 20px var(--omni-accent-glow);
+    }
+
+    .omni-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #10b981;
+      color: #041e49;
+      font-size: 11px;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      border: 2px solid var(--omni-bg-base);
+    }
+
+    /* Speed Dial Cascade Menu */
+    .omni-speed-dial {
+      position: absolute;
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.9);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+    }
+    .omni-speed-dial.dir-left {
+      right: calc(var(--omni-orb-size) + 14px);
+      top: 8px;
+      flex-direction: row-reverse;
+    }
+    .omni-speed-dial.dir-right {
+      left: calc(var(--omni-orb-size) + 14px);
+      top: 8px;
+      flex-direction: row;
+    }
+    .omni-speed-dial.dir-up {
+      bottom: calc(var(--omni-orb-size) + 14px);
+      left: 8px;
+      flex-direction: column-reverse;
+    }
+    .omni-speed-dial.dir-down {
+      top: calc(var(--omni-orb-size) + 14px);
+      left: 8px;
+      flex-direction: column;
+    }
+    .omni-speed-dial.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .omni-dial-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--omni-bg-base);
+      border: 1px solid var(--omni-border-subtle);
+      color: #c4c7c5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    }
+    .omni-dial-btn:hover {
+      background: var(--omni-bg-surface);
+      border-color: var(--omni-border-active);
+      color: var(--omni-accent-primary);
+      transform: scale(1.1);
+      box-shadow: 0 0 16px var(--omni-accent-glow);
+    }
+    .omni-dial-btn.is-active {
+      background: var(--omni-accent-primary);
+      border-color: var(--omni-accent-primary);
+      color: #041e49;
+    }
+
+    .omni-tooltip {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1f20;
+      border: 1px solid var(--omni-border-subtle);
+      color: #e3e3e3;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .omni-dial-btn:hover .omni-tooltip { opacity: 1; }
+    .omni-dial-btn.is-active .omni-tooltip { display: none; }
+
+    /* Thinking Tab Satellites */
+    .omni-satellites {
+      position: absolute;
+      bottom: calc(var(--omni-orb-size) + 14px);
+      right: 0;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .omni-sat-pill {
+      background: var(--omni-bg-surface);
+      border: 1px solid var(--omni-border-subtle);
+      color: var(--omni-accent-primary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      cursor: pointer;
+      animation: omni-pulse 2s infinite ease-in-out;
+    }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+
+    @keyframes omni-pulse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Docked Panel Window */
+    .omni-panel {
+      position: absolute;
+      bottom: calc(var(--omni-orb-size) + 24px);
+      right: 0;
+      width: 380px;
+      background: var(--omni-bg-base);
+      border: 1px solid var(--omni-border-subtle);
+      border-radius: var(--omni-radius-panel);
+      box-shadow: var(--omni-shadow-depth);
+      backdrop-filter: blur(var(--omni-blur-panel));
+      -webkit-backdrop-filter: blur(var(--omni-blur-panel));
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .omni-panel.is-open { display: flex; }
+
+    .panel-head {
+      height: 48px;
+      background: var(--omni-bg-surface);
+      border-bottom: 1px solid var(--omni-border-subtle);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-head-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--omni-accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--omni-text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+    }
+    .panel-close-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+    .panel-body {
+      padding: 16px;
+      max-height: 440px;
+      overflow-y: auto;
+    }
+
+    /* Profile Account Row Styles */
+    .acc-row {
+      background: var(--omni-bg-surface);
+      border: 1px solid var(--omni-border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .acc-row:hover { border-color: var(--omni-border-active); }
+    .acc-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .acc-info { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px; }
+    .acc-mail { font-size: 12px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .acc-role { font-size: 11px; color: var(--omni-text-muted); }
+    .acc-badge-active { color: #10b981; font-size: 11px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT CONTROL SIDEBAR -->
+  <aside class="studio-sidebar">
+    <div class="studio-header">
+      <h1>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z"/>
+        </svg>
+        Bastek Omni-OS Style Lab
+      </h1>
+      <p>Edytor styli i komponentów na żywo. ZERO emotikon.</p>
+    </div>
+
+    <!-- PRESETS -->
+    <div class="studio-section">
+      <div class="section-title">Palety i Motywy</div>
+      <div class="presets-grid">
+        <button class="preset-btn is-active" data-preset="m3">Google M3 Dark</button>
+        <button class="preset-btn" data-preset="obsidian">Cyber Obsidian</button>
+        <button class="preset-btn" data-preset="matrix">Emerald Terminal</button>
+        <button class="preset-btn" data-preset="neon">Neon Hyperwave</button>
+        <button class="preset-btn" data-preset="titanium">Titanium Slate</button>
+        <button class="preset-btn" data-preset="solar">Warm Amber</button>
+      </div>
+    </div>
+
+    <!-- COLOR PICKERS -->
+    <div class="studio-section">
+      <div class="section-title">Kolory Podstawowe</div>
+      
+      <div class="ctrl-row">
+        <span class="ctrl-label">Główny Akcent</span>
+        <div class="color-picker-wrap">
+          <span class="color-val" id="val-accent">#a8c7fa</span>
+          <input type="color" id="input-accent" value="#a8c7fa">
+        </div>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label">Tło Bazowe (Panel)</span>
+        <div class="color-picker-wrap">
+          <span class="color-val" id="val-bg-base">#1e1f20</span>
+          <input type="color" id="input-bg-base" value="#1e1f20">
+        </div>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label">Tło Kart (Surface)</span>
+        <div class="color-picker-wrap">
+          <span class="color-val" id="val-bg-surf">#282a2c</span>
+          <input type="color" id="input-bg-surf" value="#282a2c">
+        </div>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label">Obramowanie (Border)</span>
+        <div class="color-picker-wrap">
+          <span class="color-val" id="val-border">#444746</span>
+          <input type="color" id="input-border" value="#444746">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDERS & EFFECTS -->
+    <div class="studio-section">
+      <div class="section-title">Wymiary & Efekty Szkła</div>
+
+      <div class="slider-row">
+        <div class="slider-head">
+          <span>Rozmiar Kulki (FAB)</span>
+          <span class="slider-val" id="val-orb-size">60px</span>
+        </div>
+        <input type="range" id="input-orb-size" min="48" max="76" value="60">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-head">
+          <span>Zaokrąglenie Paneli (Radius)</span>
+          <span class="slider-val" id="val-radius-panel">16px</span>
+        </div>
+        <input type="range" id="input-radius-panel" min="6" max="32" value="16">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-head">
+          <span>Rozmycie Tła (Backdrop Blur)</span>
+          <span class="slider-val" id="val-blur">16px</span>
+        </div>
+        <input type="range" id="input-blur" min="0" max="32" value="16">
+      </div>
+    </div>
+
+    <!-- SIMULATION CONTROLS -->
+    <div class="studio-section">
+      <div class="section-title">Sterowanie Podglądem</div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label">Kierunek Menu (Speed Dial):</span>
+        <select id="select-dial-dir" style="background:#282a2c;border:1px solid #444746;color:#a8c7fa;padding:4px 8px;border-radius:6px;font-size:12px;">
+          <option value="left" selected>W lewo</option>
+          <option value="up">W górę</option>
+          <option value="right">W prawo</option>
+          <option value="down">W dół</option>
+        </select>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label">Stan Myślenia AI (Spinner):</span>
+        <button class="preset-btn" id="btn-toggle-thinking" style="padding:4px 10px;">Włącz / Wyłącz</button>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-label">Licznik Procesów:</span>
+        <div style="display:flex;gap:4px;">
+          <button class="preset-btn" id="btn-proc-dec" style="padding:2px 8px;">-</button>
+          <span style="font-size:12px;font-weight:700;color:#a8c7fa;min-width:18px;text-align:center;" id="disp-proc-count">3</span>
+          <button class="preset-btn" id="btn-proc-inc" style="padding:2px 8px;">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS FOOTER -->
+    <div class="actions-footer">
+      <button class="btn-action btn-primary" id="btn-copy-css">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Kopiuj Zmienne CSS
+      </button>
+      <button class="btn-action" id="btn-reset-default">
+        Reset do Google M3
+      </button>
+    </div>
+  </aside>
+
+  <!-- RIGHT MAIN PREVIEW STAGE -->
+  <main class="studio-stage">
+    
+    <!-- MOCK BROWSER ENVIRONMENT -->
+    <div class="mock-webpage">
+      <div class="mock-nav">
+        <div class="mock-dots">
+          <div class="mock-dot" style="background:#ea4335;"></div>
+          <div class="mock-dot" style="background:#fbbc05;"></div>
+          <div class="mock-dot" style="background:#34a853;"></div>
+        </div>
+        <div class="mock-address">
+          https://gemini.google.com/app — Podgląd Live Interfejsu Omni-OS
+        </div>
+      </div>
+
+      <div class="mock-body">
+        <div class="mock-card">
+          <div class="mock-title">Symulowane Środowisko Google Workspace</div>
+          <div class="mock-desc">
+            W prawym dolnym rogu znajduje się w pełni funkcjonalna, żywa symulacja komponentów <b>Bastek Omni-OS</b>.
+            Kliknij główną kulkę, by rozwinąć 5 satelitów Speed Dial. Kliknij dowolną z nich, by otworzyć panel.
+            Każda zmiana koloru lub suwaka po lewej stronie natychmiast modyfikuje wygląd w czasie rzeczywistym!
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE OMNI-OS COCKPIT OVERLAY -->
+      <div class="omni-sandbox">
+        <div class="omni-dock" id="live-dock">
+
+          <!-- Satellites Stack (Thinking Tabs) -->
+          <div class="omni-satellites" id="live-satellites">
+            <div class="omni-sat-pill">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z"/>
+              </svg>
+              <span>Gemini 3 Pro: Analiza kodu...</span>
+              <div class="pulse-dot"></div>
+            </div>
+          </div>
+
+          <!-- Speed Dial Cascade Buttons -->
+          <div class="omni-speed-dial dir-left" id="live-speed-dial">
+            
+            <button class="omni-dial-btn" data-panel="profile">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <div class="omni-tooltip">Profile</div>
+            </button>
+
+            <button class="omni-dial-btn" data-panel="clipboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+              <div class="omni-tooltip">Schowek</div>
+            </button>
+
+            <button class="omni-dial-btn" data-panel="save">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <div class="omni-tooltip">Zapisz</div>
+            </button>
+
+            <button class="omni-dial-btn" data-panel="actions">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <div class="omni-tooltip">Akcje</div>
+            </button>
+
+            <button class="omni-dial-btn" data-panel="settings">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <div class="omni-tooltip">Ustawienia</div>
+            </button>
+          </div>
+
+          <!-- Main Nexus Orb FAB -->
+          <div class="omni-orb-wrapper">
+            <div class="omni-orb-spinner" id="live-spinner"></div>
+            <div class="omni-badge" id="live-badge">3</div>
+            <button class="omni-orb-btn" id="live-orb-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Docked Panel Window -->
+          <div class="omni-panel" id="live-panel">
+            <div class="panel-head">
+              <div class="panel-head-title" id="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Konta Google & MCP</span>
+              </div>
+              <button class="panel-close-btn" id="btn-panel-close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            
+            <div class="panel-body" id="panel-content">
+              <!-- Dynamically populated or default profile view -->
+              <div class="acc-row">
+                <div class="acc-avatar">R</div>
+                <div class="acc-info">
+                  <div class="acc-mail">rudy.ziaja@gmail.com</div>
+                  <div class="acc-role">Konto prywatne / nadrzędne</div>
+                </div>
+                <span class="acc-badge-active">Aktywne</span>
+              </div>
+              <div class="acc-row">
+                <div class="acc-avatar" style="background:#d93025;">Z</div>
+                <div class="acc-info">
+                  <div class="acc-mail">ziaja.dev@gmail.com</div>
+                  <div class="acc-role">Konto developerskie</div>
+                </div>
+                <button style="background:#282a2c;border:1px solid #444746;color:#a8c7fa;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;">Przełącz</button>
+              </div>
+              <div class="acc-row" style="opacity:0.45;">
+                <div class="acc-avatar" style="background:#1e8e3e;">G</div>
+                <div class="acc-info">
+                  <div class="acc-mail">ggth1516@gmail.com</div>
+                  <div class="acc-role">Konto podstawowe Google</div>
+                </div>
+                <button style="background:#282a2c;border:1px solid #a8c7fa;color:#a8c7fa;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;">Połącz</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // PRESETS DEFINITIONS
+    const PRESETS = {
+      m3: {
+        accent: '#a8c7fa',
+        bgBase: '#1e1f20',
+        bgSurf: '#282a2c',
+        border: '#444746',
+        orbSize: 60,
+        radiusPanel: 16,
+        blur: 16
+      },
+      obsidian: {
+        accent: '#c58af9',
+        bgBase: '#121214',
+        bgSurf: '#1c1b22',
+        border: '#3c3846',
+        orbSize: 58,
+        radiusPanel: 12,
+        blur: 24
+      },
+      matrix: {
+        accent: '#34d399',
+        bgBase: '#0a1410',
+        bgSurf: '#11221b',
+        border: '#1b3b2f',
+        orbSize: 62,
+        radiusPanel: 8,
+        blur: 10
+      },
+      neon: {
+        accent: '#38bdf8',
+        bgBase: '#0b132b',
+        bgSurf: '#1c2541',
+        border: '#3a506b',
+        orbSize: 64,
+        radiusPanel: 20,
+        blur: 20
+      },
+      titanium: {
+        accent: '#e2e8f0',
+        bgBase: '#18191c',
+        bgSurf: '#232529',
+        border: '#393c43',
+        orbSize: 56,
+        radiusPanel: 14,
+        blur: 14
+      },
+      solar: {
+        accent: '#fbc02d',
+        bgBase: '#201c18',
+        bgSurf: '#2d2720',
+        border: '#4d4236',
+        orbSize: 60,
+        radiusPanel: 18,
+        blur: 16
+      }
+    };
+
+    const root = document.documentElement;
+
+    function applyValues(theme) {
+      root.style.setProperty('--omni-accent-primary', theme.accent);
+      root.style.setProperty('--omni-accent-glow', theme.accent + '66');
+      root.style.setProperty('--omni-border-active', theme.accent);
+      root.style.setProperty('--omni-bg-base', theme.bgBase);
+      root.style.setProperty('--omni-bg-surface', theme.bgSurf);
+      root.style.setProperty('--omni-border-subtle', theme.border);
+      root.style.setProperty('--omni-orb-size', theme.orbSize + 'px');
+      root.style.setProperty('--omni-radius-panel', theme.radiusPanel + 'px');
+      root.style.setProperty('--omni-blur-panel', theme.blur + 'px');
+
+      document.getElementById('input-accent').value = theme.accent;
+      document.getElementById('val-accent').textContent = theme.accent;
+      document.getElementById('input-bg-base').value = theme.bgBase;
+      document.getElementById('val-bg-base').textContent = theme.bgBase;
+      document.getElementById('input-bg-surf').value = theme.bgSurf;
+      document.getElementById('val-bg-surf').textContent = theme.bgSurf;
+      document.getElementById('input-border').value = theme.border;
+      document.getElementById('val-border').textContent = theme.border;
+
+      document.getElementById('input-orb-size').value = theme.orbSize;
+      document.getElementById('val-orb-size').textContent = theme.orbSize + 'px';
+      document.getElementById('input-radius-panel').value = theme.radiusPanel;
+      document.getElementById('val-radius-panel').textContent = theme.radiusPanel + 'px';
+      document.getElementById('input-blur').value = theme.blur;
+      document.getElementById('val-blur').textContent = theme.blur + 'px';
+    }
+
+    // Bind Presets
+    document.querySelectorAll('.preset-btn[data-preset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preset-btn[data-preset]').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        const p = PRESETS[btn.getAttribute('data-preset')];
+        if (p) applyValues(p);
+      });
+    });
+
+    // Bind Color Pickers
+    document.getElementById('input-accent').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-accent').textContent = v;
+      root.style.setProperty('--omni-accent-primary', v);
+      root.style.setProperty('--omni-accent-glow', v + '66');
+      root.style.setProperty('--omni-border-active', v);
+    });
+
+    document.getElementById('input-bg-base').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-bg-base').textContent = v;
+      root.style.setProperty('--omni-bg-base', v);
+    });
+
+    document.getElementById('input-bg-surf').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-bg-surf').textContent = v;
+      root.style.setProperty('--omni-bg-surface', v);
+    });
+
+    document.getElementById('input-border').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-border').textContent = v;
+      root.style.setProperty('--omni-border-subtle', v);
+    });
+
+    // Bind Sliders
+    document.getElementById('input-orb-size').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-orb-size').textContent = v + 'px';
+      root.style.setProperty('--omni-orb-size', v + 'px');
+    });
+
+    document.getElementById('input-radius-panel').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-radius-panel').textContent = v + 'px';
+      root.style.setProperty('--omni-radius-panel', v + 'px');
+    });
+
+    document.getElementById('input-blur').addEventListener('input', (e) => {
+      const v = e.target.value;
+      document.getElementById('val-blur').textContent = v + 'px';
+      root.style.setProperty('--omni-blur-panel', v + 'px');
+    });
+
+    // Speed Dial Direction
+    document.getElementById('select-dial-dir').addEventListener('change', (e) => {
+      const dial = document.getElementById('live-speed-dial');
+      dial.className = `omni-speed-dial dir-${e.target.value}` + (isMenuOpen ? ' is-open' : '');
+    });
+
+    // Thinking Toggle & Process Counter
+    let isThinking = true;
+    document.getElementById('btn-toggle-thinking').addEventListener('click', () => {
+      isThinking = !isThinking;
+      document.getElementById('live-spinner').classList.toggle('is-active', isThinking);
+    });
+    document.getElementById('live-spinner').classList.add('is-active');
+
+    let procCount = 3;
+    document.getElementById('btn-proc-inc').addEventListener('click', () => {
+      procCount++;
+      document.getElementById('disp-proc-count').textContent = procCount;
+      document.getElementById('live-badge').textContent = procCount;
+    });
+    document.getElementById('btn-proc-dec').addEventListener('click', () => {
+      if (procCount > 0) procCount--;
+      document.getElementById('disp-proc-count').textContent = procCount;
+      document.getElementById('live-badge').textContent = procCount;
+    });
+
+    // Copy CSS Button
+    document.getElementById('btn-copy-css').addEventListener('click', () => {
+      const cssText = `/* Bastek Omni-OS Custom Theme Tokens */\n:root {\n  --omni-bg-base: ${document.getElementById('input-bg-base').value};\n  --omni-bg-surface: ${document.getElementById('input-bg-surf').value};\n  --omni-accent-primary: ${document.getElementById('input-accent').value};\n  --omni-border-subtle: ${document.getElementById('input-border').value};\n  --omni-orb-size: ${document.getElementById('input-orb-size').value}px;\n  --omni-radius-panel: ${document.getElementById('input-radius-panel').value}px;\n  --omni-blur-panel: ${document.getElementById('input-blur').value}px;\n}`;
+      navigator.clipboard.writeText(cssText);
+      alert('Skopiowano zmienne CSS motywu do schowka!');
+    });
+
+    // Reset Default
+    document.getElementById('btn-reset-default').addEventListener('click', () => {
+      applyValues(PRESETS.m3);
+      document.querySelectorAll('.preset-btn[data-preset]').forEach(b => b.classList.remove('is-active'));
+      document.querySelector('.preset-btn[data-preset="m3"]').classList.add('is-active');
+    });
+
+    // INTERACTIVE LIVE SIMULATION LOGIC
+    let isMenuOpen = false;
+    const orbBtn = document.getElementById('live-orb-btn');
+    const speedDial = document.getElementById('live-speed-dial');
+    const panel = document.getElementById('live-panel');
+    const panelTitle = document.getElementById('panel-title');
+    const panelContent = document.getElementById('panel-content');
+
+    orbBtn.addEventListener('click', () => {
+      isMenuOpen = !isMenuOpen;
+      orbBtn.classList.toggle('is-open', isMenuOpen);
+      speedDial.classList.toggle('is-open', isMenuOpen);
+      if (!isMenuOpen) {
+        panel.classList.remove('is-open');
+        document.querySelectorAll('.omni-dial-btn').forEach(b => b.classList.remove('is-active'));
+      }
+    });
+
+    document.getElementById('btn-panel-close').addEventListener('click', () => {
+      panel.classList.remove('is-open');
+      document.querySelectorAll('.omni-dial-btn').forEach(b => b.classList.remove('is-active'));
+    });
+
+    // Panel tabs simulation
+    document.querySelectorAll('.omni-dial-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-panel');
+        document.querySelectorAll('.omni-dial-btn').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        panel.classList.add('is-open');
+
+        if (id === 'profile') {
+          panelTitle.innerHTML = `<span>Konta Google & Rejestr MCP</span>`;
+          panelContent.innerHTML = `
+            <div class="acc-row">
+              <div class="acc-avatar">R</div>
+              <div class="acc-info"><div class="acc-mail">rudy.ziaja@gmail.com</div><div class="acc-role">Konto prywatne / nadrzędne</div></div>
+              <span class="acc-badge-active">Aktywne</span>
+            </div>
+            <div class="acc-row">
+              <div class="acc-avatar" style="background:#d93025;">Z</div>
+              <div class="acc-info"><div class="acc-mail">ziaja.dev@gmail.com</div><div class="acc-role">Konto developerskie</div></div>
+              <button style="background:#282a2c;border:1px solid #444746;color:#a8c7fa;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;">Wybierz</button>
+            </div>
+            <div class="acc-row" style="opacity:0.45;">
+              <div class="acc-avatar" style="background:#1e8e3e;">G</div>
+              <div class="acc-info"><div class="acc-mail">ggth1516@gmail.com</div><div class="acc-role">Konto podstawowe Google</div></div>
+              <button style="background:#282a2c;border:1px solid #a8c7fa;color:#a8c7fa;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;">Połącz</button>
+            </div>
+          `;
+        } else if (id === 'clipboard') {
+          panelTitle.innerHTML = `<span>Schowek (Ctrl+C & D&D)</span>`;
+          panelContent.innerHTML = `
+            <div style="font-size:12px;color:#8e918f;margin-bottom:8px;">Ostatnio skopiowane obiekty:</div>
+            <div style="background:#282a2c;border:1px solid #444746;border-radius:8px;padding:10px;margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:10px;font-weight:700;color:#a8c7fa;background:rgba(168,199,250,0.15);padding:1px 6px;border-radius:4px;">KOD</span>
+                <span style="font-size:10px;color:#8e918f;">Przed chwilą</span>
+              </div>
+              <div style="font-size:11.5px;font-family:monospace;color:#e3e3e3;">const switcher = new AccountSwitcher();</div>
+            </div>
+            <div style="background:#282a2c;border:1px solid #444746;border-radius:8px;padding:10px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:10px;font-weight:700;color:#34d399;background:rgba(52,211,153,0.15);padding:1px 6px;border-radius:4px;">TEKST</span>
+                <span style="font-size:10px;color:#8e918f;">2 min temu</span>
+              </div>
+              <div style="font-size:11.5px;color:#e3e3e3;">Raport architektury trójfilarowej MAIN</div>
+            </div>
+          `;
+        } else if (id === 'settings') {
+          panelTitle.innerHTML = `<span>Ustawienia Położenia</span>`;
+          panelContent.innerHTML = `
+            <div style="font-size:11.5px;color:#8e918f;margin-bottom:8px;">Wybierz róg ekranu (fizyczny układ 2x2):</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+              <button class="preset-btn">Lewy górny</button>
+              <button class="preset-btn">Prawy górny</button>
+              <button class="preset-btn">Lewy dolny</button>
+              <button class="preset-btn is-active">Prawy dolny</button>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="preset-btn" style="flex:1;text-align:center;">Dowolne</button>
+              <button class="preset-btn" style="flex:1;text-align:center;">Przypnij</button>
+            </div>
+          `;
+        } else if (id === 'actions') {
+          panelTitle.innerHTML = `<span>Akcje Kontekstowe</span>`;
+          panelContent.innerHTML = `
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div class="acc-row"><div class="acc-info"><div class="acc-mail">Odśwież telemetrię i zużycie tokenów</div><div class="acc-role">Pobiera aktualny model</div></div></div>
+              <div class="acc-row"><div class="acc-info"><div class="acc-mail">Przewiń do najnowszej odpowiedzi</div><div class="acc-role">Wyrównanie widoku</div></div></div>
+            </div>
+          `;
+        } else if (id === 'save') {
+          panelTitle.innerHTML = `<span>Zapisz & Eksportuj</span>`;
+          panelContent.innerHTML = `
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div class="acc-row"><div class="acc-info"><div class="acc-mail">Eksportuj czat do ZIP</div><div class="acc-role">Pobiera pełne archiwum z mediami</div></div></div>
+              <div class="acc-row"><div class="acc-info"><div class="acc-mail">Pobierz jako Markdown (.md)</div><div class="acc-role">Czysty dokument z nagłówkami</div></div></div>
+              <div class="acc-row"><div class="acc-info"><div class="acc-mail">Zapisz do Obsidian Vault</div><div class="acc-role">Lokalny mesh (/MAIN/dane/)</div></div></div>
+            </div>
+          `;
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
